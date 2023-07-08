@@ -4,9 +4,9 @@ import UIKit
 // MARK: - TodoItemDetailsViewDelegate
 
 protocol TodoItemDetailsViewDelegate: AnyObject {
-    func didSelectPriority(_ priority: ImportanceType)
-    func didSelectDeadline(_ date: Date?)
-    func didSelectColor(_ color: UIColor?)
+    @MainActor func didSelectPriority(_ priority: ImportanceType)
+    @MainActor func didSelectDeadline(_ date: Date?)
+    @MainActor func didSelectColor(_ color: UIColor?)
 }
 
 // MARK: - TodoItemDetailsView

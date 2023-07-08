@@ -3,7 +3,7 @@ import UIKit
 // MARK: - CalendarViewDelegate
 
 protocol CalendarViewDelegate: AnyObject {
-    func calendarView(_ view: CalendarView, didChange date: Date)
+    @MainActor func calendarView(_ view: CalendarView, didChange date: Date)
 }
 
 // MARK: - CalendarView
@@ -97,12 +97,16 @@ final class CalendarView: UIView {
         )
         return dateComponents
     }
+    
+    private func returnCalendarView(_ view: CalendarView, didChange date: Date) {
+        delegate?.calendarView(view, didChange: date)
+    }
 }
 
 // MARK: - UICalendarSelectionSingleDateDelegate
 
 extension CalendarView: UICalendarSelectionSingleDateDelegate {
-    func dateSelection(_ selection: UICalendarSelectionSingleDate, didSelectDate dateComponents: DateComponents?) {
+    nonisolated func dateSelection(_ selection: UICalendarSelectionSingleDate, didSelectDate dateComponents: DateComponents?) {
         guard
             let dateComponents,
             let date = dateComponents.date
@@ -110,6 +114,6 @@ extension CalendarView: UICalendarSelectionSingleDateDelegate {
             return
         }
 
-        delegate?.calendarView(self, didChange: date)
+        Task { await returnCalendarView(self, didChange: date) }
     }
 }

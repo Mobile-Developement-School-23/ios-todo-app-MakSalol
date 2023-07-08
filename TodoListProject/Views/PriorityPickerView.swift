@@ -4,7 +4,7 @@ import UIKit
 // MARK: - PriorityPickerViewDelegate
 
 protocol PriorityPickerViewDelegate: AnyObject {
-    func didSelectPriority(_ importance: ImportanceType)
+    @MainActor func didSelectPriority(_ importance: ImportanceType)
 }
 
 // MARK: - PriorityPickerView

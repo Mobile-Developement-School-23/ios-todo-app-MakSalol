@@ -2,7 +2,7 @@ import Foundation
 import UIKit
 
 protocol CustomHeaderViewDelegate: AnyObject {
-    func buttonTapped(_ sender: UIButton)
+    @MainActor func buttonTapped(_ sender: UIButton)
 }
 
 final class CustomHeaderView: UIView {

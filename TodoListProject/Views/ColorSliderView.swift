@@ -3,7 +3,7 @@ import UIKit
 // MARK: - ColorSliderViewDelegate
 
 protocol ColorSliderViewDelegate: AnyObject {
-    func colorSliderView(_ view: ColorSliderView, didChange value: Int)
+    @MainActor func colorSliderView(_ view: ColorSliderView, didChange value: Int)
 }
 
 // MARK: - ColorSliderView
