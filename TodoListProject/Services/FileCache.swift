@@ -3,7 +3,7 @@ import Foundation
 
 final class FileCache {
 
-    private(set) var todoItems = [TodoItem]()
+    var todoItems = [TodoItem]()
 
     func addItem(item: TodoItem) {
         if let index = todoItems.firstIndex(where: {$0.id == item.id}) {

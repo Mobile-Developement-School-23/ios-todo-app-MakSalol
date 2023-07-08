@@ -1,12 +1,12 @@
- import Foundation
+import Foundation
 
- enum ImportanceType: String, CaseIterable {
-    case unimportant
-    case common
+enum ImportanceType: String, CaseIterable {
+    case low
+    case basic
     case important
- }
+}
 
- struct TodoItem {
+struct TodoItem {
     let id: String
     let text: String
     let deadline: Date?
@@ -15,7 +15,8 @@
     let taskCreated: Date
     let taskChanged: Date?
     let color: HEX?
-
+    let lastUpdatedBy: String
+    
     init(id: String = UUID().uuidString,
          text: String,
          deadline: Date? = nil,
@@ -23,8 +24,9 @@
          taskCompleted: Bool,
          taskCreated: Date = Date.now,
          taskChanged: Date? = nil,
-         color: HEX? = nil) {
-
+         color: HEX? = nil,
+         lastUpdatedBy: String = "MyIphone") {
+        
         self.id = id
         self.text = text
         self.deadline = deadline
@@ -33,5 +35,6 @@
         self.taskCreated = taskCreated
         self.taskChanged = taskChanged
         self.color = color
+        self.lastUpdatedBy = lastUpdatedBy
     }
- }
+}

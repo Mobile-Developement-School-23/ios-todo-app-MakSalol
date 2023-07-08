@@ -1,12 +1,19 @@
 import UIKit
 
+enum DetailsType {
+    case new
+    case change
+}
+
 final class TodoListViewController: UIViewController {
     let fileCache = AppDelegate.shared().fileCache
+    let networkingService = AppDelegate.shared().networkingService
     private let headerView = CustomHeaderView()
     private var displayedTasks = [TodoItem]()
+    private var isDirty = true
 
     private func setupDisplayedTasks() {
-        displayedTasks = displayingAllTasks() ? fileCache.todoItems.sorted { $0.taskCompleted.intValue > $1.taskCompleted.intValue} : fileCache.todoItems.filter { $0.taskCompleted == false}
+        displayedTasks = displayingAllTasks() ? fileCache.todoItems.sorted { $0.taskCompleted.intValue > $1.taskCompleted.intValue } : fileCache.todoItems.filter { $0.taskCompleted == false }
         setupCompletedTasksCount()
     }
 
@@ -23,6 +30,30 @@ final class TodoListViewController: UIViewController {
         headerView.subtitleLabel.text = "Выполнено – \(completedTasks)"
     }
 
+    private func fetchDataFromNetwork() {
+        Task(priority: .high) {
+            do {
+                let items = try await networkingService.getList()
+                isDirty = false
+                fetchDataToLocal(items: items)
+            }
+            catch {
+                isDirty = true
+            }
+        }
+    }
+    
+    @MainActor
+    func fetchDataToLocal(items: [TodoItem]) {
+        fileCache.todoItems = items
+        fileCache.saveToJSONFile(filename: "file")
+        setupDisplayedTasks()
+        setupCompletedTasksCount()
+        UIView.transition(with: tableView, duration: 0.3, options: .transitionCrossDissolve, animations: {
+            self.tableView.reloadData()
+        }, completion: nil)
+    }
+    
     private let tableView: UITableView = {
         let tblView = UITableView(frame: .zero, style: .insetGrouped)
         tblView.layer.cornerRadius = 16
@@ -44,7 +75,7 @@ final class TodoListViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        displayedTasks = fileCache.todoItems.filter { $0.taskCompleted == false}
+        fetchDataFromNetwork()
         tableView.dataSource = self
         tableView.delegate = self
         headerView.delegate = self
@@ -65,7 +96,7 @@ final class TodoListViewController: UIViewController {
     @objc
     private func presentDetailsVC(at index: Int) {
         let item = displayedTasks[index]
-        let itemDetailsVC = TodoItemDetailsViewController(item: item)
+        let itemDetailsVC = TodoItemDetailsViewController(item: item, detailsType: .change)
         itemDetailsVC.delegate = self
         present(itemDetailsVC, animated: true)
     }
@@ -112,6 +143,18 @@ final class TodoListViewController: UIViewController {
             displayedTasks.remove(at: indexPath.row)
             self.fileCache.removeItem(id: item.id)
             self.fileCache.saveToJSONFile(filename: "file")
+            Task(priority: .userInitiated) {
+                if self.isDirty {
+                    self.fetchDataFromNetwork()
+                }
+                do {
+                    try await self.networkingService.deleteItem(id: item.id)
+                    self.isDirty = false
+                }
+                catch {
+                    self.isDirty = true
+                }
+            }
             self.tableView.deleteRows(at: [indexPath], with: .automatic)
             completion(true)
         }
@@ -139,6 +182,18 @@ final class TodoListViewController: UIViewController {
             item.taskCompleted = true
             self.fileCache.addItem(item: item)
             self.fileCache.saveToJSONFile(filename: "file")
+            Task(priority: .userInitiated) {
+                if self.isDirty {
+                    self.fetchDataFromNetwork()
+                }
+                do {
+                    try await self.networkingService.updateItem(item: item)
+                    self.isDirty = false
+                }
+                catch {
+                    self.isDirty = true
+                }
+            }
             tableView.deleteRows(at: [indexPath], with: .automatic)
             setupCompletedTasksCount()
             completion(true)
@@ -160,10 +215,8 @@ extension TodoListViewController: TodoItemDetailsViewControllerDelegate {
 extension TodoListViewController: CustomHeaderViewDelegate {
     func buttonTapped(_ sender: UIButton) {
         if displayingAllTasks() {
-            displayedTasks = fileCache.todoItems.filter { $0.taskCompleted == false }
             sender.setTitle("Показать", for: .normal)
         } else {
-            displayedTasks = fileCache.todoItems
             sender.setTitle("Cкрыть", for: .normal)
         }
         UIView.transition(with: tableView, duration: 0.3, options: .transitionCrossDissolve, animations: {
@@ -271,4 +324,3 @@ extension TodoListViewController: UITableViewDelegate {
         }
     }
 }
-

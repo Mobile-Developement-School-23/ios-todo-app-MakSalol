@@ -130,7 +130,7 @@ final class TodoItemDetailsView: UIView {
     }
 
     private func makePriorityView() -> UIView {
-        let view = PriorityPickerView(importance: item?.importance ?? ImportanceType.common)
+        let view = PriorityPickerView(importance: item?.importance ?? ImportanceType.basic)
         view.delegate = self
         return view
     }
