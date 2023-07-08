@@ -3,7 +3,7 @@ import UIKit
 // MARK: - ColorPickerViewDelegate
 
 protocol ColorPickerViewDelegate: AnyObject {
-    func colorPickerView(_ view: ColorPickerView, didChangeColor color: UIColor?)
+    @MainActor func colorPickerView(_ view: ColorPickerView, didChangeColor color: UIColor?)
 }
 
 // MARK: - ColorPickerView

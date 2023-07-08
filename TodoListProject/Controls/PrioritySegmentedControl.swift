@@ -4,7 +4,7 @@ import UIKit
 // MARK: - PrioritySegmentedControlDelegate
 
 protocol PrioritySegmentedControlDelegate: AnyObject {
-    func didSelectPriority(_ importance: ImportanceType)
+    @MainActor func didSelectPriority(_ importance: ImportanceType)
 }
 
 // MARK: - PrioritySegmentedControl

@@ -2,7 +2,7 @@ import UIKit
 
 
 protocol TodoItemDetailsViewControllerDelegate: AnyObject {
-    func itemsChanged()
+    @MainActor func itemsChanged()
 }
 
 // MARK: - TodoItemDetailsViewController
