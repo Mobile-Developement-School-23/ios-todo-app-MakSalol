@@ -20,17 +20,20 @@ final class TodoItemDetailsViewController: UIViewController {
     private lazy var deleteButton = makeDeleteButton()
 
     private var newText: String?
-    private var selectedPriority: ImportanceType = .common
+    private var selectedPriority: ImportanceType = .basic
     private var selectedDeadlineDate: Date?
     private var selectedColor: UIColor?
 
     private let item: TodoItem?
+    private var detailsType: DetailsType
     private let fileCache = AppDelegate.shared().fileCache
+    private let networkingService = AppDelegate.shared().networkingService
 
     weak var delegate: TodoItemDetailsViewControllerDelegate?
 
-    init(item: TodoItem? = nil) {
+    init(item: TodoItem? = nil, detailsType: DetailsType = .new) {
         self.item = item
+        self.detailsType = detailsType
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -94,9 +97,17 @@ final class TodoItemDetailsViewController: UIViewController {
                                    taskCompleted: false,
                                    color: selectedColor?.hex ?? item?.color)
             }
-
             fileCache.addItem(item: newItem)
             fileCache.saveToJSONFile(filename: "file")
+            Task(priority: .high) {
+                if detailsType == .change {
+                    try await networkingService.updateItem(item: newItem)
+                }
+                else {
+                    try await networkingService.postItem(item: newItem)
+                }
+            }
+
             delegate?.itemsChanged()
             dismiss(animated: true)
         default:
@@ -110,6 +121,9 @@ final class TodoItemDetailsViewController: UIViewController {
         if let item = item {
             fileCache.removeItem(id: item.id)
             fileCache.saveToJSONFile(filename: "file")
+            Task(priority: .high) {
+               try await networkingService.deleteItem(id: item.id)
+            }
             delegate?.itemsChanged()
         }
         dismiss(animated: true)

@@ -86,11 +86,11 @@ final class PriorityControl: UIControl {
 
     private func makeContentView() -> UIView {
         switch importance {
-        case .unimportant:
+        case .low:
             let imageView = UIImageView(image: AppImage.priorityLow.image)
             imageView.translatesAutoresizingMaskIntoConstraints = false
             return imageView
-        case .common:
+        case .basic:
             let label = UILabel()
             label.font = AppFont.subhead.font
             label.textColor = AppColor.labelPrimary.color

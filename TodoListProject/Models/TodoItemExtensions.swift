@@ -7,32 +7,29 @@ extension TodoItem {
 
         guard let jsonDict = json as? [String: Any] else { return nil }
 
-        let dateFormatter = DateFormats().dateFormatter
-
         guard let id = jsonDict["id"] as? String,
               let text = jsonDict["text"] as? String,
-              let taskCreatedString = jsonDict["taskCreated"] as? String,
-              let taskCompletedString = jsonDict["taskCompleted"] as? String,
+              let taskCreatedString = jsonDict["created_at"] as? Double,
+              let taskCompletedString = jsonDict["done"] as? Int
 
-              let taskCreated = dateFormatter.date(from: taskCreatedString),
-              let taskCompleted = Bool(taskCompletedString)
         else {
             return nil
         }
-
-        var importance: ImportanceType = ImportanceType.common
+        let taskCompleted = Bool(truncating: taskCompletedString as NSNumber)
+        let taskCreated = Date(timeIntervalSince1970: taskCreatedString)
+        var importance: ImportanceType = ImportanceType.basic
         if let importanceString = jsonDict["importance"] as? String {
-            importance = ImportanceType(rawValue: importanceString) ?? ImportanceType.common
+            importance = ImportanceType(rawValue: importanceString) ?? ImportanceType.basic
         }
 
         var deadline: Date?
-        if let deadlineString = jsonDict["deadline"] as? String {
-            deadline = dateFormatter.date(from: deadlineString)
+        if let deadlineString = jsonDict["deadline"] as? Double {
+            deadline = Date(timeIntervalSince1970: deadlineString)
         }
 
         var taskChanged: Date?
-        if let taskChangedString = jsonDict["taskChanged"] as? String {
-            taskChanged = dateFormatter.date(from: taskChangedString)
+        if let taskChangedString = jsonDict["changed_at"] as? Double {
+            taskChanged = Date(timeIntervalSince1970: taskChangedString)
         }
 
         let color = jsonDict["color"] as? HEX
@@ -44,20 +41,18 @@ extension TodoItem {
 
     var json: Any {
 
-        let dateFormatter = DateFormats().dateFormatter
-
         var dictionary = [
             "id": id,
             "text": text,
-            "taskCompleted": String(taskCompleted),
-            "taskCreated": dateFormatter.string(from: taskCreated)
+            "done": taskCompleted,
+            "created_at": Int64(taskCreated.timeIntervalSince1970),
+            "last_updated_by": lastUpdatedBy
         ] as [String: Any]
 
-        dictionary["deadline"] = deadline != nil ? dateFormatter.string(from: deadline!) : nil
-        dictionary["taskChanged"] = taskChanged != nil ? dateFormatter.string(from: taskChanged!) : nil
-        dictionary["importance"] = importance != .common ? importance.rawValue : nil
+        dictionary["deadline"] = deadline != nil ? Int64(deadline!.timeIntervalSince1970) : nil
+        dictionary["changed_at"] = taskChanged != nil ? Int64(taskChanged!.timeIntervalSince1970) : Int64(Date.now.timeIntervalSince1970)
+        dictionary["importance"] = importance.rawValue
         dictionary["color"] = color
-
         return dictionary
     }
 }
@@ -83,7 +78,7 @@ extension TodoItem {
 
         guard let taskCreated = dateFormatter.date(from: taskCreatedString),
               let taskCompleted = Bool(taskCompletedString),
-              let importance = importanceString != "" ? ImportanceType(rawValue: importanceString) : ImportanceType.common
+              let importance = importanceString != "" ? ImportanceType(rawValue: importanceString) : ImportanceType.basic
         else { return nil }
 
         let deadline = dateFormatter.date(from: deadlineString)
@@ -106,7 +101,7 @@ extension TodoItem {
 
         let deadlineString: String = deadline != nil ? dateFormatter.string(from: deadline!) : ""
         let taskChangedString: String = taskChanged != nil ? dateFormatter.string(from: taskChanged!) : ""
-        let importanceString: String = importance != .common ? importance.rawValue : ""
+        let importanceString: String = importance != .basic ? importance.rawValue : ""
 
         let csvString = "\(id);\(text);\(deadlineString);\(importanceString);\(taskCompleted);\(dateFormatter.string(from: taskCreated));\(taskChangedString)\n"
 

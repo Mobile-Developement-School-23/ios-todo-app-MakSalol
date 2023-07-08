@@ -20,7 +20,7 @@ final class PrioritySegmentedControl: UIView {
         return control
     }
 
-    var selectedPriority: ImportanceType = .common {
+    var selectedPriority: ImportanceType = .basic {
         didSet {
             guard selectedPriority != oldValue else {
                 return

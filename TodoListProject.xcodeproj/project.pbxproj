@@ -14,6 +14,7 @@
 		2D1F89952A466A7B0006B69A /* Date Formats.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D1F89942A466A7B0006B69A /* Date Formats.swift */; };
 		2D2EE7DB2A59032E00EC9650 /* URLSessionExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D2EE7DA2A59032E00EC9650 /* URLSessionExtensions.swift */; };
 		2D2EE7E32A5903B200EC9650 /* TodoListProjectTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D2EE7E22A5903B200EC9650 /* TodoListProjectTests.swift */; };
+		2D2EE7EC2A590F4A00EC9650 /* NetworkingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D2EE7EB2A590F4A00EC9650 /* NetworkingService.swift */; };
 		2D33F6F82A4F985F007A6C9E /* TodoListViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D33F6F72A4F985F007A6C9E /* TodoListViewCell.swift */; };
 		2D33F6FA2A4F9865007A6C9E /* CustomHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D33F6F92A4F9865007A6C9E /* CustomHeaderView.swift */; };
 		2D33F6FC2A4F987D007A6C9E /* BoolExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D33F6FB2A4F987D007A6C9E /* BoolExtensions.swift */; };
@@ -76,6 +77,7 @@
 		2D2EE7DA2A59032E00EC9650 /* URLSessionExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLSessionExtensions.swift; sourceTree = "<group>"; };
 		2D2EE7E02A5903B200EC9650 /* TodoListProjectTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TodoListProjectTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2D2EE7E22A5903B200EC9650 /* TodoListProjectTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodoListProjectTests.swift; sourceTree = "<group>"; };
+		2D2EE7EB2A590F4A00EC9650 /* NetworkingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkingService.swift; sourceTree = "<group>"; };
 		2D33F6F72A4F985F007A6C9E /* TodoListViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TodoListViewCell.swift; sourceTree = "<group>"; };
 		2D33F6F92A4F9865007A6C9E /* CustomHeaderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomHeaderView.swift; sourceTree = "<group>"; };
 		2D33F6FB2A4F987D007A6C9E /* BoolExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BoolExtensions.swift; sourceTree = "<group>"; };
@@ -250,6 +252,7 @@
 			children = (
 				2D1F898A2A4666FD0006B69A /* FileCache.swift */,
 				2D1F898B2A4666FD0006B69A /* FileCacheExtensions.swift */,
+				2D2EE7EB2A590F4A00EC9650 /* NetworkingService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -392,6 +395,7 @@
 				50F0B0E22A3FF12800276342 /* PriorityControl.swift in Sources */,
 				5078C8D52A3A63BA00FDD7D1 /* AppDelegate.swift in Sources */,
 				50EBA6042A44B5F300634D2D /* TodoListViewController.swift in Sources */,
+				2D2EE7EC2A590F4A00EC9650 /* NetworkingService.swift in Sources */,
 				2D1F89952A466A7B0006B69A /* Date Formats.swift in Sources */,
 				2D33F6FC2A4F987D007A6C9E /* BoolExtensions.swift in Sources */,
 				50389B6F2A40BE3A00D3EE3E /* DividerView.swift in Sources */,

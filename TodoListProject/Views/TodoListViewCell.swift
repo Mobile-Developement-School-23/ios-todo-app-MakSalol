@@ -128,9 +128,9 @@ final class TodoListViewSell: UITableViewCell {
                 doneImage.image = UIImage(named: "radio_button_high_priority_24x24")
             }
             priorityImage.image = AppImage.priorityHigh.image
-        case .unimportant:
+        case .low:
             priorityImage.image = AppImage.priorityLow.image
-        case .common:
+        case .basic:
             priorityImage.image = nil
         }
 
