@@ -93,6 +93,7 @@ final class PriorityPickerView: UIView {
 // MARK: - PrioritySegmentedControlDelegate
 
 extension PriorityPickerView: PrioritySegmentedControlDelegate {
+    @MainActor
     func didSelectPriority(_ importance: ImportanceType) {
         delegate?.didSelectPriority(importance)
     }

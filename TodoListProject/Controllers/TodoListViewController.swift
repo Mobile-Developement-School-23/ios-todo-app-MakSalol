@@ -33,9 +33,9 @@ final class TodoListViewController: UIViewController {
     private func fetchDataFromNetwork() {
         Task(priority: .high) {
             do {
-                let items = try await networkingService.getList()
+                _ = try await networkingService.getList()
                 isDirty = false
-                fetchDataToLocal(items: items)
+                //fetchDataToLocal(items: items)
             }
             catch {
                 isDirty = true
@@ -44,9 +44,9 @@ final class TodoListViewController: UIViewController {
     }
     
     @MainActor
-    func fetchDataToLocal(items: [TodoItem]) {
-        fileCache.todoItems = items
-        fileCache.saveToJSONFile(filename: "file")
+    func fetchDataFromLocal() {
+        fileCache.Load()
+        //fileCache.saveToJSONFile(filename: "file")
         setupDisplayedTasks()
         setupCompletedTasksCount()
         UIView.transition(with: tableView, duration: 0.3, options: .transitionCrossDissolve, animations: {
@@ -75,7 +75,7 @@ final class TodoListViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        fetchDataFromNetwork()
+        fetchDataFromLocal()
         tableView.dataSource = self
         tableView.delegate = self
         headerView.delegate = self
@@ -142,7 +142,8 @@ final class TodoListViewController: UIViewController {
             let item = displayedTasks[indexPath.row]
             displayedTasks.remove(at: indexPath.row)
             self.fileCache.removeItem(id: item.id)
-            self.fileCache.saveToJSONFile(filename: "file")
+            //self.fileCache.saveToJSONFile(filename: "file")
+            self.fileCache.Delete(item: item)
             Task(priority: .userInitiated) {
                 if self.isDirty {
                     self.fetchDataFromNetwork()
@@ -181,7 +182,8 @@ final class TodoListViewController: UIViewController {
             displayedTasks.remove(at: indexPath.row)
             item.taskCompleted = true
             self.fileCache.addItem(item: item)
-            self.fileCache.saveToJSONFile(filename: "file")
+            self.fileCache.Update(item: item)
+            //self.fileCache.saveToJSONFile(filename: "file")
             Task(priority: .userInitiated) {
                 if self.isDirty {
                     self.fetchDataFromNetwork()
