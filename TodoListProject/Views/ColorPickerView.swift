@@ -137,6 +137,7 @@ final class ColorPickerView: UIView {
 // MARK: - ColorSliderViewDelegate
 
 extension ColorPickerView: ColorSliderViewDelegate {
+    @MainActor
     func colorSliderView(_ view: ColorSliderView, didChange value: Int) {
         switch view {
         case redSlider:

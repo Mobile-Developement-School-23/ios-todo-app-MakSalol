@@ -1,5 +1,6 @@
 import Foundation
-
+import SQLite
+import CoreData
 
 extension TodoItem {
 
@@ -108,3 +109,81 @@ extension TodoItem {
         return csvString
     }
 }
+
+extension TodoItem {
+    var sqlReplaceStatement: String {
+        let deadlineString = self.deadline.flatMap({ String($0.timeIntervalSince1970)}) ?? "NULL"
+        let taskChangedString = self.taskChanged.flatMap({ String(Int($0.timeIntervalSince1970))}) ?? "NULL"
+        let colorString = self.color ?? "NULL"
+        
+        return "REPLACE INTO list (\"id\", \"text\", \"deadline\", \"importance\", \"taskCreated\", \"taskCompleted\", \"taskChanged\", \"color\") VALUES ('\(self.id)', '\(self.text)', '\(deadlineString)', '\(self.importance.rawValue)', '\(Int64(self.taskCreated.timeIntervalSince1970))', '\(self.taskCompleted)', '\(taskChangedString)', '\(colorString)')"
+    }
+    
+    var sqlDeleteStatement: String {
+        return "DELETE FROM list WHERE (\"id\" = \"\(self.id)\")"
+    }
+    
+    var sqlInsertStatement: String {
+        let deadlineString = self.deadline.flatMap({ String($0.timeIntervalSince1970)}) ?? "NULL"
+        let taskChangedString = self.taskChanged.flatMap({ String(Int($0.timeIntervalSince1970))}) ?? "NULL"
+        let colorString = self.color ?? "NULL"
+        
+        return "INSERT INTO list (\"id\", \"text\", \"deadline\", \"importance\", \"taskCreated\", \"taskCompleted\", \"taskChanged\", \"color\") VALUES ('\(self.id)', '\(self.text)', '\(deadlineString)', '\(self.importance.rawValue)', '\(Int64(self.taskCreated.timeIntervalSince1970))', '\(self.taskCompleted)', '\(taskChangedString)', '\(colorString)')"
+    }
+    
+    static func parse(raw: [Any]) -> TodoItem? {
+        guard let id = raw[0] as? String,
+              let text = raw[1] as? String,
+              let importance = (raw[3] as? String).flatMap({ImportanceType(rawValue: $0)}),
+              let taskCreated = (raw[4] as? Int64).flatMap({ Date(timeIntervalSince1970: Double($0))}),
+              let taskCompleted = (raw[5] as? String).flatMap({Bool($0)})
+        else { return nil }
+        
+        let deadline = (raw[2] as? Int64).flatMap({Date(timeIntervalSince1970: Double($0))})
+        let taskChanged = (raw[6] as? Int64).flatMap({Date(timeIntervalSince1970: Double($0))})
+        let color = (raw[7] as? HEX)
+        
+        return TodoItem(id: id,
+                        text: text,
+                        deadline: deadline,
+                        importance: importance,
+                        taskCompleted: taskCompleted,
+                        taskCreated: taskCreated,
+                        taskChanged: taskChanged,
+                        color: color)
+    }
+}
+
+extension TodoItem {
+    
+    static func coreItem(item: TodoItem, context: NSManagedObjectContext) -> Item {
+        let newItem = Item(context: context)
+        newItem.id = item.id
+        newItem.text = item.text
+        newItem.deadline = item.deadline
+        newItem.importance = item.importance.rawValue
+        newItem.taskCreated = item.taskCreated
+        newItem.taskChanged = item.taskChanged
+        newItem.taskCompleted = item.taskCompleted
+        newItem.color = item.color
+        return newItem
+    }
+    
+    static func parse(entity: Item) -> TodoItem? {
+        guard let id = entity.id,
+              let text = entity.text,
+              let importance = entity.importance,
+              let taskCreated = entity.taskCreated
+        else {return nil}
+        
+        return TodoItem(id: id,
+                        text: text,
+                        deadline: entity.deadline,
+                        importance: ImportanceType(rawValue: importance) ?? .basic,
+                        taskCompleted: entity.taskCompleted,
+                        taskCreated: taskCreated,
+                        taskChanged: entity.taskChanged,
+                        color: entity.color)
+    }
+}
+

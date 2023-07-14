@@ -90,15 +90,17 @@ final class TodoItemDetailsViewController: UIViewController {
                                    importance: selectedPriority,
                                    taskCompleted: false,
                                    color: selectedColor?.hex ?? item.color)
+                fileCache.Update(item: newItem)
             } else {
                 newItem = TodoItem(text: newText ?? "",
                                    deadline: selectedDeadlineDate ?? item?.deadline,
                                    importance: selectedPriority,
                                    taskCompleted: false,
                                    color: selectedColor?.hex ?? item?.color)
+                fileCache.Insert(item: newItem)
             }
             fileCache.addItem(item: newItem)
-            fileCache.saveToJSONFile(filename: "file")
+            //fileCache.saveToJSONFile(filename: "file")
             Task(priority: .high) {
                 if detailsType == .change {
                     try await networkingService.updateItem(item: newItem)
@@ -120,7 +122,8 @@ final class TodoItemDetailsViewController: UIViewController {
 
         if let item = item {
             fileCache.removeItem(id: item.id)
-            fileCache.saveToJSONFile(filename: "file")
+            //fileCache.saveToJSONFile(filename: "file")
+            fileCache.Delete(item: item)
             Task(priority: .high) {
                try await networkingService.deleteItem(id: item.id)
             }
